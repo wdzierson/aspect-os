@@ -1,5 +1,5 @@
 import './index.css';
-import { useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import {
   OSProvider,
   OSDesktop,
@@ -8,26 +8,16 @@ import {
   WindowRenderer,
   useOSServices,
 } from '@aspect/os-ui';
-import { MessageCircle, FileText, Settings } from 'lucide-react';
+import { MessageCircle, FileText, Settings, Terminal, LayoutGrid } from 'lucide-react';
 import { ChatApp } from './apps/ChatApp';
 import { NotepadApp } from './apps/NotepadApp';
 import { PreferencesApp } from './apps/PreferencesApp';
+import { TerminalApp } from './apps/TerminalApp';
+import { ComponentShowcase } from './apps/ComponentShowcase';
+import { LoginScreen } from './components/LoginScreen';
 
 const WALLPAPER =
   'linear-gradient(135deg, #1a1a2e 0%, #16213e 25%, #0f3460 50%, #533483 75%, #e94560 100%)';
-
-function useDarkModeInit() {
-  useEffect(() => {
-    const envDark = import.meta.env.VITE_DARK_MODE;
-    if (envDark === 'true') {
-      document.documentElement.classList.add('dark');
-    } else if (envDark === 'false') {
-      document.documentElement.classList.remove('dark');
-    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      document.documentElement.classList.add('dark');
-    }
-  }, []);
-}
 
 function AppIcon({ icon: Icon }: { icon: React.ComponentType<any> }) {
   return <Icon className="w-9 h-9 text-white drop-shadow-lg" strokeWidth={1.5} />;
@@ -53,8 +43,26 @@ const appDefinitions = [
     component: NotepadApp,
   },
   {
+    id: 'terminal',
+    name: 'Terminal',
+    icon: <AppIcon icon={Terminal} />,
+    defaultTitle: 'Terminal',
+    defaultWidth: 640,
+    defaultHeight: 420,
+    component: TerminalApp,
+  },
+  {
+    id: 'showcase',
+    name: 'Components',
+    icon: <AppIcon icon={LayoutGrid} />,
+    defaultTitle: 'Component Showcase',
+    defaultWidth: 800,
+    defaultHeight: 600,
+    component: ComponentShowcase,
+  },
+  {
     id: 'preferences',
-    name: 'System Preferences',
+    name: 'Preferences',
     icon: <AppIcon icon={Settings} />,
     defaultTitle: 'System Preferences',
     defaultWidth: 720,
@@ -63,6 +71,19 @@ const appDefinitions = [
     component: PreferencesApp,
   },
 ];
+
+function useDarkModeInit() {
+  useEffect(() => {
+    const envDark = import.meta.env.VITE_DARK_MODE;
+    if (envDark === 'true') {
+      document.documentElement.classList.add('dark');
+    } else if (envDark === 'false') {
+      document.documentElement.classList.remove('dark');
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      document.documentElement.classList.add('dark');
+    }
+  }, []);
+}
 
 function Desktop() {
   const { windowManager } = useOSServices();
@@ -92,6 +113,11 @@ function Desktop() {
 
 export default function App() {
   useDarkModeInit();
+  const [loggedIn, setLoggedIn] = useState(false);
+
+  if (!loggedIn) {
+    return <LoginScreen onLogin={() => setLoggedIn(true)} wallpaper={WALLPAPER} />;
+  }
 
   return (
     <OSProvider>
