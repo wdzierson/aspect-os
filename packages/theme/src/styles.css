@@ -1,0 +1,227 @@
+/* AspectOS Design System */
+
+@layer base {
+  :root {
+    /* Core Neutral Palette */
+    --os-background: 210 25% 98%;
+    --os-foreground: 215 15% 15%;
+    --os-card: 0 0% 100%;
+    --os-card-foreground: 215 15% 15%;
+    --os-popover: 0 0% 100%;
+    --os-popover-foreground: 215 15% 15%;
+
+    /* Accent System */
+    --os-primary: 215 100% 60%;
+    --os-primary-foreground: 0 0% 100%;
+    --os-secondary: 210 15% 96%;
+    --os-secondary-foreground: 215 15% 25%;
+    --os-muted: 210 15% 95%;
+    --os-muted-foreground: 215 10% 50%;
+    --os-accent: 220 100% 65%;
+    --os-accent-foreground: 0 0% 100%;
+    --os-destructive: 0 85% 60%;
+    --os-destructive-foreground: 0 0% 100%;
+
+    /* Borders */
+    --os-border: 215 15% 90%;
+    --os-input: 0 0% 100%;
+    --os-ring: 215 100% 60%;
+
+    /* Traffic Lights */
+    --os-mac-red: 0 85% 62%;
+    --os-mac-yellow: 45 100% 58%;
+    --os-mac-green: 145 75% 48%;
+
+    /* Window System */
+    --os-window-bg: 0 0% 100% / 0.8;
+    --os-window-border: 215 15% 85% / 0.5;
+    --os-window-title-bg: 210 25% 98% / 0.9;
+    --os-window-shadow: 215 30% 15% / 0.15;
+    --os-window-chrome: 215 15% 96%;
+
+    /* Glass Effects */
+    --os-glass-bg: 0 0% 100% / 0.7;
+    --os-glass-border: 215 15% 85% / 0.3;
+    --os-glass-shadow: 215 30% 15% / 0.1;
+
+    /* Spacing (4px grid) */
+    --os-space-1: 4px;
+    --os-space-2: 8px;
+    --os-space-3: 12px;
+    --os-space-4: 16px;
+    --os-space-5: 20px;
+    --os-space-6: 24px;
+    --os-space-8: 32px;
+    --os-space-10: 40px;
+    --os-space-12: 48px;
+    --os-space-16: 64px;
+
+    /* Border Radius */
+    --os-radius: 10px;
+    --os-radius-sm: 8px;
+    --os-radius-lg: 16px;
+    --os-radius-xl: 20px;
+
+    /* Shadows */
+    --os-shadow-xs: 0 1px 2px hsl(var(--os-window-shadow));
+    --os-shadow-sm: 0 1px 4px hsl(var(--os-window-shadow));
+    --os-shadow-md: 0 4px 12px hsl(var(--os-window-shadow));
+    --os-shadow-lg: 0 8px 24px hsl(var(--os-window-shadow));
+    --os-shadow-xl: 0 16px 48px hsl(var(--os-window-shadow));
+    --os-shadow-window: 0 8px 32px hsl(var(--os-window-shadow));
+    --os-shadow-floating: 0 4px 16px hsl(var(--os-window-shadow));
+
+    /* Blur */
+    --os-blur-sm: blur(4px);
+    --os-blur-md: blur(8px);
+    --os-blur-lg: blur(16px);
+    --os-blur-xl: blur(24px);
+
+    /* Animation */
+    --os-duration-fast: 150ms;
+    --os-duration-normal: 250ms;
+    --os-duration-slow: 350ms;
+    --os-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    --os-ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+
+    /* Z-Index Scale */
+    --os-z-desktop: 0;
+    --os-z-window: 100;
+    --os-z-menubar: 1000;
+    --os-z-dialog: 2000;
+    --os-z-notification: 3000;
+    --os-z-tooltip: 4000;
+
+    /* Sidebar */
+    --os-sidebar-background: 210 25% 98%;
+    --os-sidebar-foreground: 215 15% 25%;
+    --os-sidebar-primary: 215 100% 60%;
+    --os-sidebar-primary-foreground: 0 0% 100%;
+    --os-sidebar-accent: 210 15% 96%;
+    --os-sidebar-accent-foreground: 215 15% 25%;
+    --os-sidebar-border: 215 15% 90%;
+  }
+
+  .dark {
+    --os-background: 220 15% 8%;
+    --os-foreground: 210 25% 95%;
+    --os-card: 220 15% 10%;
+    --os-card-foreground: 210 25% 95%;
+    --os-popover: 220 15% 10%;
+    --os-popover-foreground: 210 25% 95%;
+    --os-primary: 215 100% 65%;
+    --os-primary-foreground: 220 15% 8%;
+    --os-secondary: 220 15% 15%;
+    --os-secondary-foreground: 210 25% 85%;
+    --os-muted: 220 15% 12%;
+    --os-muted-foreground: 215 10% 60%;
+    --os-accent: 220 100% 70%;
+    --os-accent-foreground: 220 15% 8%;
+    --os-destructive: 0 85% 65%;
+    --os-destructive-foreground: 220 15% 8%;
+    --os-border: 220 15% 20%;
+    --os-input: 220 15% 12%;
+    --os-ring: 215 100% 65%;
+    --os-mac-red: 0 85% 65%;
+    --os-mac-yellow: 45 100% 62%;
+    --os-mac-green: 145 75% 52%;
+    --os-window-bg: 220 15% 10% / 0.9;
+    --os-window-border: 220 15% 25% / 0.5;
+    --os-window-title-bg: 220 15% 12% / 0.95;
+    --os-window-shadow: 220 30% 5% / 0.3;
+    --os-window-chrome: 220 15% 15%;
+    --os-glass-bg: 220 15% 10% / 0.8;
+    --os-glass-border: 220 15% 25% / 0.4;
+    --os-glass-shadow: 220 30% 5% / 0.2;
+    --os-sidebar-background: 220 15% 8%;
+    --os-sidebar-foreground: 210 25% 85%;
+    --os-sidebar-primary: 215 100% 65%;
+    --os-sidebar-primary-foreground: 220 15% 8%;
+    --os-sidebar-accent: 220 15% 15%;
+    --os-sidebar-accent-foreground: 210 25% 85%;
+    --os-sidebar-border: 220 15% 20%;
+  }
+}
+
+/* Glass morphism */
+.os-glass {
+  background: hsl(var(--os-glass-bg));
+  backdrop-filter: var(--os-blur-md);
+  border: 0.5px solid hsl(var(--os-glass-border));
+}
+
+.os-glass-window {
+  background: hsl(var(--os-window-bg));
+  backdrop-filter: var(--os-blur-lg);
+  border: 0.5px solid hsl(var(--os-window-border));
+  box-shadow: var(--os-shadow-window);
+}
+
+/* Focus styles */
+.os-focus-ring {
+  outline: none;
+  box-shadow:
+    0 0 0 2px hsl(var(--os-ring) / 0.5),
+    0 0 0 4px hsl(var(--os-background));
+}
+
+/* Custom scrollbars */
+.os-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.os-scrollbar::-webkit-scrollbar-track {
+  background: hsl(var(--os-muted));
+  border-radius: var(--os-radius-sm);
+}
+.os-scrollbar::-webkit-scrollbar-thumb {
+  background: hsl(var(--os-muted-foreground) / 0.3);
+  border-radius: var(--os-radius-sm);
+}
+.os-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--os-muted-foreground) / 0.5);
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Component utility classes */
+.os-window-content {
+  background: hsl(var(--os-card) / 0.3);
+  backdrop-filter: var(--os-blur-sm);
+  height: 100%;
+  overflow: auto;
+}
+
+.os-toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--os-space-3);
+  padding: var(--os-space-4);
+  border-bottom: 1px solid hsl(var(--os-border) / 0.5);
+  background: hsl(var(--os-muted) / 0.3);
+  backdrop-filter: var(--os-blur-sm);
+}
+
+.os-panel {
+  background: hsl(var(--os-glass-bg));
+  backdrop-filter: var(--os-blur-md);
+  border: 0.5px solid hsl(var(--os-glass-border));
+  border-radius: var(--os-radius-lg);
+  padding: var(--os-space-6);
+  box-shadow: var(--os-shadow-floating);
+}
+
+.os-sidebar {
+  background: hsl(var(--os-glass-bg));
+  backdrop-filter: var(--os-blur-md);
+  border: 0.5px solid hsl(var(--os-glass-border));
+  border-radius: var(--os-radius-lg);
+  padding: var(--os-space-4);
+  min-width: 256px;
+}

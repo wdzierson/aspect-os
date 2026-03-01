@@ -1,0 +1,13 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "noEmit": true,
+    "paths": {
+      "@aspect/os-core": ["../../packages/core/src"],
+      "@aspect/os-ui": ["../../packages/ui/src"],
+      "@aspect/os-theme/*": ["../../packages/theme/src/*"]
+    }
+  },
+  "include": ["src"]
+}

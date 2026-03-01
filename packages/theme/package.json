@@ -1,0 +1,36 @@
+{
+  "name": "@aspect/os-theme",
+  "version": "0.1.0",
+  "description": "Design tokens, CSS variables, glassmorphism styles, and Tailwind preset for AspectOS",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./styles.css": "./src/styles.css",
+    "./preset": {
+      "import": "./dist/tailwind-preset.mjs",
+      "require": "./dist/tailwind-preset.js",
+      "types": "./dist/tailwind-preset.d.ts"
+    }
+  },
+  "files": ["dist", "src/styles.css"],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "devDependencies": {
+    "tsup": "^8.0.0",
+    "typescript": "^5.5.3"
+  },
+  "peerDependencies": {
+    "tailwindcss": "^3.4.0"
+  },
+  "license": "MIT"
+}
