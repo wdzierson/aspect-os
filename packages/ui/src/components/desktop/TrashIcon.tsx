@@ -78,9 +78,7 @@ export function TrashIcon({
         size={32}
         className={cn(
           'transition-colors',
-          isEmpty
-            ? 'text-[var(--os-text-secondary,#aaa)]'
-            : 'text-[var(--os-text,#fff)]',
+          'text-[var(--os-text,#fff)]',
         )}
         aria-hidden="true"
       />

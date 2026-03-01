@@ -14,6 +14,15 @@ html, body, #root {
   background: #000;
 }
 
+:root {
+  --aspect-text-scale: 1;
+  --aspect-ui-scale: 1;
+  --aspect-desktop-icon-size: 40px;
+  --aspect-desktop-icon-slot: 88px;
+  --aspect-desktop-label-size: 11px;
+  --aspect-desktop-emoji-size: 1.875rem;
+}
+
 .sr-only {
   position: absolute;
   width: 1px;

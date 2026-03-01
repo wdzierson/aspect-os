@@ -72,6 +72,13 @@ const ALERTS = [
   { variant: 'error', icon: XCircle, title: 'Error', msg: 'Failed to connect to the remote server. Please try again.' },
 ];
 
+const TIMELINE = [
+  { title: 'Project created', time: '09:12', status: 'done' },
+  { title: 'Design review', time: '10:45', status: 'done' },
+  { title: 'API integration', time: '12:30', status: 'active' },
+  { title: 'QA handoff', time: '14:00', status: 'pending' },
+];
+
 const alertStyles: Record<string, { border: string; bg: string; icon: string }> = {
   info: { border: 'border-l-blue-500', bg: 'bg-blue-500/5', icon: 'text-blue-500' },
   success: { border: 'border-l-green-500', bg: 'bg-green-500/5', icon: 'text-green-500' },
@@ -307,6 +314,47 @@ export function ComponentShowcase() {
               </div>
             );
           })}
+        </div>
+      </Section>
+
+      {/* Extra primitives */}
+      <Section title="Extra Primitives">
+        <div className="grid grid-cols-2 gap-4">
+          <div className="bg-muted/30 border border-border/50 rounded-xl p-4">
+            <div className="text-xs font-medium text-muted-foreground mb-3">Command Chips</div>
+            <div className="flex flex-wrap gap-2">
+              {['/new-window', '/open-chat', '/run-checks', '/deploy-preview'].map((cmd) => (
+                <button
+                  key={cmd}
+                  className="px-2.5 py-1 rounded-md border border-border bg-background text-xs text-foreground hover:bg-muted transition-colors"
+                >
+                  {cmd}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="bg-muted/30 border border-border/50 rounded-xl p-4">
+            <div className="text-xs font-medium text-muted-foreground mb-3">Timeline</div>
+            <div className="space-y-2">
+              {TIMELINE.map((item) => (
+                <div key={item.title} className="flex items-center justify-between text-xs">
+                  <div className="flex items-center gap-2">
+                    <span
+                      className={`w-2 h-2 rounded-full ${
+                        item.status === 'done'
+                          ? 'bg-green-500'
+                          : item.status === 'active'
+                            ? 'bg-blue-500'
+                            : 'bg-muted-foreground/40'
+                      }`}
+                    />
+                    <span className="text-foreground">{item.title}</span>
+                  </div>
+                  <span className="text-muted-foreground">{item.time}</span>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </Section>
 

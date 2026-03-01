@@ -400,6 +400,32 @@ eventBus.on('chat:new-message', (e) => showNotification(e.data));
 
 ---
 
+## Developer Patterns (Demo)
+
+### Propagating preferences via events
+
+The demo includes a simple preferences event model in `apps/demo/src/uiPreferences.ts`:
+
+- `getUIPreferences()` reads persisted settings
+- `setUIPreferences(next)` persists + dispatches a window event
+- `subscribeUIPreferences(cb)` listens for updates
+
+`App.tsx` subscribes and applies UI variables globally (`--aspect-ui-scale`, `--aspect-text-scale`) so developers can see one preferences panel update propagate across desktop icon sizing and text scale.
+
+### Per-app menu actions
+
+The demo also shows app-specific menu wiring:
+
+- App menus are defined in `apps/demo/src/App.tsx` (`APP_MENUS`, `APP_MENU_LABELS`)
+- `SystemMenuBar` dispatches `os:menu-action` with `{ action, appId }`
+- Example handlers:
+  - Notes: `notes-new` launches a new blank Notes window (`appRegistry.launchApp('notepad', ..., { initialContent: '' })`)
+  - Terminal: `terminal-new-tab` is handled inside `TerminalApp` to add an in-window tab
+
+This pattern is intentionally simple so teams can replace `window` events with their own event bus, command router, or state layer.
+
+---
+
 ## Virtual File System (Optional)
 
 Install the VFS plugin for file persistence:

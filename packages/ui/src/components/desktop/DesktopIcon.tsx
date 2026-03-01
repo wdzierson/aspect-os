@@ -59,7 +59,7 @@ export function DesktopIcon({
       onDoubleClick={onDoubleClick}
       onKeyDown={handleKeyDown}
       className={cn(
-        'flex w-16 cursor-default select-none flex-col items-center gap-1 rounded-lg p-1.5',
+        'flex min-w-0 cursor-default select-none flex-col items-center gap-1 rounded-lg p-1.5',
         'outline-none transition-transform duration-150',
         'hover:scale-105',
         'focus-visible:ring-2 focus-visible:ring-[var(--os-accent,#007AFF)]',
@@ -67,10 +67,21 @@ export function DesktopIcon({
           'bg-[var(--os-accent,#007AFF)]/20 ring-1 ring-[var(--os-accent,#007AFF)]/40',
         className,
       )}
+      style={{ width: 'var(--aspect-desktop-icon-slot, 88px)' }}
     >
-      <div className="flex h-10 w-10 items-center justify-center">
+      <div
+        className="flex items-center justify-center"
+        style={{
+          width: 'var(--aspect-desktop-icon-size, 40px)',
+          height: 'var(--aspect-desktop-icon-size, 40px)',
+        }}
+      >
         {isEmoji ? (
-          <span className="text-3xl leading-none" aria-hidden="true">
+          <span
+            className="leading-none"
+            style={{ fontSize: 'var(--aspect-desktop-emoji-size, 1.875rem)' }}
+            aria-hidden="true"
+          >
             {icon}
           </span>
         ) : (
@@ -79,9 +90,10 @@ export function DesktopIcon({
       </div>
       <span
         className={cn(
-          'line-clamp-2 max-w-full text-center text-[11px] leading-tight',
+          'line-clamp-2 w-full text-center leading-tight break-words',
           'text-[var(--os-text,#fff)] drop-shadow-[0_1px_1px_rgba(0,0,0,0.6)]',
         )}
+        style={{ fontSize: 'var(--aspect-desktop-label-size, 11px)' }}
         title={name}
       >
         {name}

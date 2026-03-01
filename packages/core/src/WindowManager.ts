@@ -5,6 +5,7 @@ import { screenBounds as defaultScreenBounds } from './ScreenBounds';
 export class WindowManager {
   private windows = new Map<string, WindowState>();
   private listeners = new Map<string, (windows: Map<string, WindowState>) => void>();
+  private restoreBounds = new Map<string, { x: number; y: number; width: number; height: number }>();
   private highestZIndex = 100;
   private screenBounds: ScreenBoundsManager;
 
@@ -37,7 +38,8 @@ export class WindowManager {
     if (!win) return;
 
     let final = { ...updates };
-    if ('x' in updates || 'y' in updates || 'width' in updates || 'height' in updates) {
+    const explicitMaximize = updates.isMaximized === true;
+    if (!explicitMaximize && ('x' in updates || 'y' in updates || 'width' in updates || 'height' in updates)) {
       const pos = this.screenBounds.constrainPosition(
         updates.x ?? win.x,
         updates.y ?? win.y,
@@ -64,6 +66,7 @@ export class WindowManager {
   }
 
   closeWindow(id: string): void {
+    this.restoreBounds.delete(id);
     if (this.windows.delete(id)) this.notify();
   }
 
@@ -72,19 +75,48 @@ export class WindowManager {
   }
 
   restoreWindow(id: string): void {
-    this.updateWindow(id, { isMinimized: false, isMaximized: false });
+    const restore = this.restoreBounds.get(id);
+    if (restore) {
+      this.updateWindow(id, {
+        isMinimized: false,
+        isMaximized: false,
+        x: restore.x,
+        y: restore.y,
+        width: restore.width,
+        height: restore.height,
+      });
+      this.restoreBounds.delete(id);
+    } else {
+      this.updateWindow(id, { isMinimized: false, isMaximized: false });
+    }
     this.focusWindow(id);
   }
 
   maximizeWindow(id: string): void {
+    const current = this.windows.get(id);
+    if (!current) return;
+
+    // Toggle maximize -> restore, matching macOS green button behavior.
+    if (current.isMaximized) {
+      this.restoreWindow(id);
+      return;
+    }
+
+    this.restoreBounds.set(id, {
+      x: current.x,
+      y: current.y,
+      width: current.width,
+      height: current.height,
+    });
+
     const b = this.screenBounds.getBounds();
     this.updateWindow(id, {
       isMaximized: true,
       isMinimized: false,
-      x: b.minMargin,
-      y: b.menuBarHeight + b.minMargin,
-      width: b.width - b.minMargin * 2,
-      height: b.height - b.menuBarHeight - b.minMargin * 2,
+      x: 0,
+      y: b.menuBarHeight,
+      width: b.width,
+      height: b.height - b.menuBarHeight,
     });
   }
 

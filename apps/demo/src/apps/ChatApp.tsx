@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { Send } from 'lucide-react';
+import { Bot, Mic, Paperclip, Plus, Send, X } from 'lucide-react';
 
 interface Message {
   id: number;
@@ -79,7 +79,10 @@ export function ChatApp() {
   const [contacts, setContacts] = useState(initialContacts);
   const [activeContactId, setActiveContactId] = useState('alex');
   const [input, setInput] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
+  const [attachments, setAttachments] = useState<Array<{ id: string; name: string; size?: number }>>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const nextId = useRef(100);
 
   const activeContact = contacts.find((c) => c.id === activeContactId)!;
@@ -103,8 +106,10 @@ export function ChatApp() {
       ),
     );
     setInput('');
+    setAttachments([]);
 
     const replyId = nextId.current++;
+    setIsTyping(true);
     setTimeout(() => {
       const reply = CANNED_REPLIES[Math.floor(Math.random() * CANNED_REPLIES.length)];
       setContacts((prev) =>
@@ -114,8 +119,44 @@ export function ChatApp() {
             : c,
         ),
       );
+      setIsTyping(false);
     }, 800 + Math.random() * 700);
   }, [input, activeContactId]);
+
+  const addAttachments = useCallback((files: FileList | null) => {
+    if (!files?.length) return;
+    const next = Array.from(files).map((file, i) => ({
+      id: `${Date.now()}-${i}`,
+      name: file.name,
+      size: file.size,
+    }));
+    setAttachments((prev) => [...prev, ...next]);
+  }, []);
+
+  const removeAttachment = useCallback((id: string) => {
+    setAttachments((prev) => prev.filter((a) => a.id !== id));
+  }, []);
+
+  const simulateVoice = useCallback(() => {
+    setIsTyping(true);
+    const replyId = nextId.current++;
+    window.setTimeout(() => {
+      setContacts((prev) =>
+        prev.map((c) =>
+          c.id === activeContactId
+            ? {
+                ...c,
+                messages: [
+                  ...c.messages,
+                  { id: replyId, text: 'Voice message received. Hook this to your bot/voice backend.', sent: false, time: now() },
+                ],
+              }
+            : c,
+        ),
+      );
+      setIsTyping(false);
+    }, 1200);
+  }, [activeContactId]);
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
@@ -212,11 +253,66 @@ export function ChatApp() {
               </div>
             </div>
           ))}
+          {isTyping && (
+            <div className="flex justify-start">
+              <div className="max-w-[70%] px-3 py-2 rounded-2xl rounded-bl-md bg-muted text-foreground">
+                <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground mb-1">
+                  <Bot className="w-3 h-3" />
+                  <span>{activeContact.name} is typing</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground/70 animate-bounce" style={{ animationDelay: '0ms' }} />
+                  <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground/70 animate-bounce" style={{ animationDelay: '150ms' }} />
+                  <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground/70 animate-bounce" style={{ animationDelay: '300ms' }} />
+                </div>
+              </div>
+            </div>
+          )}
           <div ref={messagesEndRef} />
         </div>
 
         {/* Input */}
-        <div className="px-3 py-2.5 border-t border-border/50 flex items-center gap-2">
+        <div className="px-3 py-2.5 border-t border-border/50">
+          {attachments.length > 0 && (
+            <div className="flex flex-wrap gap-1.5 mb-2">
+              {attachments.map((a) => (
+                <span
+                  key={a.id}
+                  className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-muted text-muted-foreground text-[11px]"
+                >
+                  <Paperclip className="w-3 h-3" />
+                  <span className="max-w-[160px] truncate">{a.name}</span>
+                  <button
+                    type="button"
+                    onClick={() => removeAttachment(a.id)}
+                    className="hover:bg-muted-foreground/20 rounded p-0.5"
+                    aria-label="Remove attachment"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </span>
+              ))}
+            </div>
+          )}
+          <div className="flex items-center gap-2">
+            <input
+              ref={fileInputRef}
+              type="file"
+              multiple
+              onChange={(e) => {
+                addAttachments(e.target.files);
+                e.currentTarget.value = '';
+              }}
+              className="hidden"
+            />
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="w-8 h-8 rounded-full border border-border bg-muted flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-primary/40 transition-colors"
+              aria-label="Add attachment"
+            >
+              <Plus className="w-3.5 h-3.5" strokeWidth={2} />
+            </button>
           <input
             type="text"
             value={input}
@@ -225,6 +321,14 @@ export function ChatApp() {
             placeholder="Type a message..."
             className="flex-1 bg-muted border border-border text-foreground placeholder-muted-foreground rounded-full px-4 py-1.5 text-sm outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-colors"
           />
+            <button
+              type="button"
+              onClick={simulateVoice}
+              className="w-8 h-8 rounded-full border border-border bg-muted flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-primary/40 transition-colors"
+              aria-label="Simulate voice message"
+            >
+              <Mic className="w-3.5 h-3.5" strokeWidth={2} />
+            </button>
           <button
             onClick={sendMessage}
             disabled={!input.trim()}
@@ -232,6 +336,7 @@ export function ChatApp() {
           >
             <Send className="w-3.5 h-3.5" strokeWidth={2} />
           </button>
+          </div>
         </div>
       </div>
     </div>

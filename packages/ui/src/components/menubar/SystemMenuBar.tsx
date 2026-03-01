@@ -8,8 +8,10 @@ import { SystemTray } from './SystemTray';
 export interface SystemMenuBarProps {
   appleMenuItems?: MenuItem[];
   appMenus?: Record<string, MenuItem[][]>;
+  appMenuLabels?: Record<string, string[]>;
   activeAppId?: string;
   activeAppName?: string;
+  activeWindowId?: string | null;
   rightContent?: ReactNode;
   className?: string;
 }
@@ -17,12 +19,15 @@ export interface SystemMenuBarProps {
 export const SystemMenuBar = ({
   appleMenuItems,
   appMenus,
+  appMenuLabels,
   activeAppId,
   activeAppName,
+  activeWindowId,
   rightContent,
   className,
 }: SystemMenuBarProps) => {
   const activeMenus = activeAppId ? appMenus?.[activeAppId] : undefined;
+  const activeLabels = activeAppId ? appMenuLabels?.[activeAppId] : undefined;
 
   const handleAppleAction = (action: string) => {
     window.dispatchEvent(
@@ -33,7 +38,7 @@ export const SystemMenuBar = ({
   const handleAppAction = (action: string, data?: any) => {
     window.dispatchEvent(
       new CustomEvent('os:menu-action', {
-        detail: { action, appId: activeAppId, data },
+        detail: { action, appId: activeAppId, windowId: activeWindowId, data },
       }),
     );
   };
@@ -59,7 +64,7 @@ export const SystemMenuBar = ({
         )}
 
         {activeMenus && (
-          <AppMenus menus={activeMenus} onAction={handleAppAction} />
+          <AppMenus menus={activeMenus} labels={activeLabels} onAction={handleAppAction} />
         )}
       </div>
 

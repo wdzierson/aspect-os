@@ -1,5 +1,18 @@
-import { useState, type ReactNode } from 'react';
+import { useState, type ChangeEvent, type ReactNode } from 'react';
 import { Settings, Palette, Monitor, Bell, Volume2 } from 'lucide-react';
+import {
+  getDesktopBackground,
+  setDesktopBackground,
+  type DesktopBackgroundKind,
+} from '../desktopBackground';
+import {
+  getUIPreferences,
+  setUIPreferences,
+  getThemeMode,
+  setThemeMode,
+  type InterfaceSize,
+  type TextSize,
+} from '../uiPreferences';
 
 type Category = 'general' | 'appearance' | 'desktop' | 'notifications' | 'sound';
 
@@ -69,11 +82,27 @@ function Select({
   );
 }
 
-const WALLPAPERS = [
-  { name: 'Twilight', gradient: 'linear-gradient(135deg, #1a1a2e, #16213e, #0f3460, #533483, #e94560)' },
-  { name: 'Ocean', gradient: 'linear-gradient(135deg, #0c2340, #1a3a5c, #2d6187, #45b7d1, #96e6ff)' },
-  { name: 'Forest', gradient: 'linear-gradient(135deg, #1a2a1a, #2d4a2d, #3e6b3e, #5ca15c, #8cd98c)' },
-  { name: 'Sunset', gradient: 'linear-gradient(135deg, #2d1b3d, #5c2d5c, #b44d7a, #f0926a, #ffd085)' },
+const WALLPAPERS: Array<{ kind: DesktopBackgroundKind; name: string; gradient: string }> = [
+  {
+    kind: 'gradient-twilight',
+    name: 'Twilight',
+    gradient: 'linear-gradient(135deg, #1a1a2e, #16213e, #0f3460, #533483, #e94560)',
+  },
+  {
+    kind: 'gradient-ocean',
+    name: 'Ocean',
+    gradient: 'linear-gradient(135deg, #0c2340, #1a3a5c, #2d6187, #45b7d1, #96e6ff)',
+  },
+  {
+    kind: 'gradient-forest',
+    name: 'Forest',
+    gradient: 'linear-gradient(135deg, #1a2a1a, #2d4a2d, #3e6b3e, #5ca15c, #8cd98c)',
+  },
+  {
+    kind: 'gradient-sunset',
+    name: 'Sunset',
+    gradient: 'linear-gradient(135deg, #2d1b3d, #5c2d5c, #b44d7a, #f0926a, #ffd085)',
+  },
 ];
 
 const ACCENT_COLORS = [
@@ -111,16 +140,23 @@ function GeneralPane() {
 }
 
 function AppearancePane() {
-  const [darkMode, setDarkMode] = useState(() => document.documentElement.classList.contains('dark'));
+  const [darkMode, setDarkMode] = useState(() => {
+    const persisted = getThemeMode();
+    if (persisted) return persisted === 'dark';
+    return document.documentElement.classList.contains('dark');
+  });
   const [accent, setAccent] = useState('#3b82f6');
-  const [size, setSize] = useState<'small' | 'medium' | 'large'>('medium');
+  const [size, setSize] = useState<InterfaceSize>(() => getUIPreferences().interfaceSize);
+  const [textSize, setTextSize] = useState<TextSize>(() => getUIPreferences().textSize);
 
   const toggleDarkMode = (enabled: boolean) => {
     setDarkMode(enabled);
     if (enabled) {
       document.documentElement.classList.add('dark');
+      setThemeMode('dark');
     } else {
       document.documentElement.classList.remove('dark');
+      setThemeMode('light');
     }
   };
 
@@ -148,12 +184,35 @@ function AppearancePane() {
 
       <SectionTitle>Interface Size</SectionTitle>
       <div className="flex items-center gap-1 py-2">
-        {(['small', 'medium', 'large'] as const).map((s) => (
+        {(['small', 'medium', 'large'] as const).map((s: InterfaceSize) => (
           <button
             key={s}
-            onClick={() => setSize(s)}
+            onClick={() => {
+              setSize(s);
+              setUIPreferences({ interfaceSize: s, textSize });
+            }}
             className={`px-3 py-1 text-xs rounded-md capitalize transition-colors ${
               size === s
+                ? 'bg-primary/15 text-primary font-medium'
+                : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+            }`}
+          >
+            {s}
+          </button>
+        ))}
+      </div>
+
+      <SectionTitle>Text Size</SectionTitle>
+      <div className="flex items-center gap-1 py-2">
+        {(['small', 'medium', 'large'] as const).map((s: TextSize) => (
+          <button
+            key={s}
+            onClick={() => {
+              setTextSize(s);
+              setUIPreferences({ interfaceSize: size, textSize: s });
+            }}
+            className={`px-3 py-1 text-xs rounded-md capitalize transition-colors ${
+              textSize === s
                 ? 'bg-primary/15 text-primary font-medium'
                 : 'text-muted-foreground hover:text-foreground hover:bg-muted'
             }`}
@@ -167,19 +226,43 @@ function AppearancePane() {
 }
 
 function DesktopPane() {
-  const [selectedWallpaper, setSelectedWallpaper] = useState(0);
+  const [selectedKind, setSelectedKind] = useState<DesktopBackgroundKind>(() => getDesktopBackground().kind);
   const [showIcons, setShowIcons] = useState(true);
+  const [isDragOver, setIsDragOver] = useState(false);
+
+  const selectWallpaper = (kind: DesktopBackgroundKind, value: string) => {
+    setSelectedKind(kind);
+    setDesktopBackground({ kind, value });
+  };
+
+  const applyImageFile = (file: File | undefined) => {
+    if (!file) return;
+    if (!file.type.startsWith('image/')) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = typeof reader.result === 'string' ? reader.result : null;
+      if (!result) return;
+      selectWallpaper('image-custom', `url(${result}) center/cover no-repeat`);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleUploadImage = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    applyImageFile(file);
+    e.currentTarget.value = '';
+  };
 
   return (
     <div>
       <SectionTitle>Wallpaper</SectionTitle>
       <div className="grid grid-cols-2 gap-2.5 py-2">
-        {WALLPAPERS.map((wp, i) => (
+        {WALLPAPERS.map((wp) => (
           <button
             key={wp.name}
-            onClick={() => setSelectedWallpaper(i)}
+            onClick={() => selectWallpaper(wp.kind, wp.gradient)}
             className={`h-20 rounded-lg overflow-hidden transition-all ${
-              selectedWallpaper === i
+              selectedKind === wp.kind
                 ? 'ring-2 ring-primary scale-[1.02]'
                 : 'ring-1 ring-border hover:ring-primary/50'
             }`}
@@ -192,6 +275,37 @@ function DesktopPane() {
             </div>
           </button>
         ))}
+      </div>
+      <div className="pb-2">
+        <label className="text-xs font-medium text-muted-foreground">Upload Image</label>
+        <input
+          type="file"
+          accept="image/*"
+          onChange={handleUploadImage}
+          className="mt-1 block w-full text-xs text-foreground file:mr-3 file:rounded-md file:border file:border-border file:bg-muted file:px-2 file:py-1 file:text-xs file:text-foreground"
+        />
+      </div>
+      <div className="pb-2">
+        <label className="text-xs font-medium text-muted-foreground">Drag Photo Here</label>
+        <div
+          className={`mt-1 h-20 rounded-lg border-2 border-dashed flex items-center justify-center text-xs transition-colors ${
+            isDragOver
+              ? 'border-primary bg-primary/10 text-primary'
+              : 'border-border bg-muted/30 text-muted-foreground'
+          }`}
+          onDragOver={(e) => {
+            e.preventDefault();
+            setIsDragOver(true);
+          }}
+          onDragLeave={() => setIsDragOver(false)}
+          onDrop={(e) => {
+            e.preventDefault();
+            setIsDragOver(false);
+            applyImageFile(e.dataTransfer.files?.[0]);
+          }}
+        >
+          {isDragOver ? 'Drop image to apply as wallpaper' : 'Drag photo here'}
+        </div>
       </div>
 
       <SectionTitle>Icons</SectionTitle>

@@ -43,7 +43,7 @@ export function DesktopIconGrid({
     >
       <div
         className="absolute top-2 right-4 flex flex-col flex-wrap-reverse items-end gap-1 pointer-events-auto"
-        style={{ maxHeight: 'calc(100% - 4rem)', width: '80px' }}
+        style={{ maxHeight: 'calc(100% - 4rem)', width: '100px' }}
       >
         {visibleApps.map((app) => (
           <div key={app.id} role="gridcell">

@@ -5,6 +5,16 @@ interface Line {
   text: string;
 }
 
+interface TerminalTab {
+  id: number;
+  label: string;
+  history: Line[];
+  input: string;
+  cwd: string;
+  cmdHistory: string[];
+  histIdx: number;
+}
+
 const WELCOME = `AspectOS Terminal v1.0.0
 Type "help" for available commands.
 `;
@@ -133,68 +143,120 @@ Packages:
 }
 
 export function TerminalApp() {
-  const [history, setHistory] = useState<Line[]>([{ type: 'output', text: WELCOME }]);
-  const [input, setInput] = useState('');
-  const [cwd, setCwd] = useState('~');
-  const [cmdHistory, setCmdHistory] = useState<string[]>([]);
-  const [histIdx, setHistIdx] = useState(-1);
+  const nextTabIdRef = useRef(2);
+  const [tabs, setTabs] = useState<TerminalTab[]>([
+    {
+      id: 1,
+      label: 'Tab 1',
+      history: [{ type: 'output', text: WELCOME }],
+      input: '',
+      cwd: '~',
+      cmdHistory: [],
+      histIdx: -1,
+    },
+  ]);
+  const [activeTabId, setActiveTabId] = useState(1);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const activeTab = tabs.find((t) => t.id === activeTabId) ?? tabs[0];
+
+  const updateActiveTab = useCallback((updater: (tab: TerminalTab) => TerminalTab) => {
+    setTabs((prev) => prev.map((tab) => (tab.id === activeTabId ? updater(tab) : tab)));
+  }, [activeTabId]);
+
+  const createTab = useCallback(() => {
+    const id = nextTabIdRef.current++;
+    const newTab: TerminalTab = {
+      id,
+      label: `Tab ${id}`,
+      history: [{ type: 'output', text: WELCOME }],
+      input: '',
+      cwd: '~',
+      cmdHistory: [],
+      histIdx: -1,
+    };
+    setTabs((prev) => [...prev, newTab]);
+    setActiveTabId(id);
+  }, []);
+
+  useEffect(() => {
+    const handleMenuAction = (event: Event) => {
+      const detail = (event as CustomEvent<{ action?: string; appId?: string }>).detail;
+      if (detail?.appId === 'terminal' && detail.action === 'terminal-new-tab') {
+        createTab();
+      } else if (detail?.appId === 'terminal' && detail.action === 'terminal-clear') {
+        updateActiveTab((tab) => ({ ...tab, history: [] }));
+      }
+    };
+    window.addEventListener('os:menu-action', handleMenuAction);
+    return () => window.removeEventListener('os:menu-action', handleMenuAction);
+  }, [createTab, updateActiveTab]);
+
   useEffect(() => {
     scrollRef.current?.scrollTo(0, scrollRef.current.scrollHeight);
-  }, [history]);
+  }, [tabs, activeTabId]);
 
   const submit = useCallback(() => {
-    const trimmed = input.trim();
-    const prompt = `user@aspect-os ${cwd} % `;
-    setHistory((h) => [...h, { type: 'input', text: prompt + trimmed }]);
+    if (!activeTab) return;
+    const trimmed = activeTab.input.trim();
+    const prompt = `user@aspect-os ${activeTab.cwd} % `;
+    updateActiveTab((tab) => ({
+      ...tab,
+      history: [...tab.history, { type: 'input', text: prompt + trimmed }],
+    }));
 
     if (trimmed) {
-      setCmdHistory((h) => [trimmed, ...h]);
-      setHistIdx(-1);
+      updateActiveTab((tab) => ({
+        ...tab,
+        cmdHistory: [trimmed, ...tab.cmdHistory],
+        histIdx: -1,
+      }));
 
-      const { output, isError } = processCommand(trimmed, cwd, setCwd);
+      const { output, isError } = processCommand(trimmed, activeTab.cwd, (nextCwd) => {
+        updateActiveTab((tab) => ({ ...tab, cwd: nextCwd }));
+      });
       if (output === '__CLEAR__') {
-        setHistory([]);
+        updateActiveTab((tab) => ({ ...tab, history: [] }));
       } else if (output) {
-        setHistory((h) => [...h, { type: isError ? 'error' : 'output', text: output }]);
+        updateActiveTab((tab) => ({
+          ...tab,
+          history: [...tab.history, { type: isError ? 'error' : 'output', text: output }],
+        }));
       }
     }
-    setInput('');
-  }, [input, cwd]);
+    updateActiveTab((tab) => ({ ...tab, input: '' }));
+  }, [activeTab, updateActiveTab]);
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
+      if (!activeTab) return;
       if (e.key === 'Enter') {
         e.preventDefault();
         submit();
       } else if (e.key === 'ArrowUp') {
         e.preventDefault();
-        if (cmdHistory.length > 0) {
-          const next = Math.min(histIdx + 1, cmdHistory.length - 1);
-          setHistIdx(next);
-          setInput(cmdHistory[next]);
+        if (activeTab.cmdHistory.length > 0) {
+          const next = Math.min(activeTab.histIdx + 1, activeTab.cmdHistory.length - 1);
+          updateActiveTab((tab) => ({ ...tab, histIdx: next, input: tab.cmdHistory[next] ?? '' }));
         }
       } else if (e.key === 'ArrowDown') {
         e.preventDefault();
-        if (histIdx > 0) {
-          const next = histIdx - 1;
-          setHistIdx(next);
-          setInput(cmdHistory[next]);
+        if (activeTab.histIdx > 0) {
+          const next = activeTab.histIdx - 1;
+          updateActiveTab((tab) => ({ ...tab, histIdx: next, input: tab.cmdHistory[next] ?? '' }));
         } else {
-          setHistIdx(-1);
-          setInput('');
+          updateActiveTab((tab) => ({ ...tab, histIdx: -1, input: '' }));
         }
       } else if (e.key === 'l' && e.ctrlKey) {
         e.preventDefault();
-        setHistory([]);
+        updateActiveTab((tab) => ({ ...tab, history: [] }));
       }
     },
-    [submit, cmdHistory, histIdx],
+    [activeTab, submit, updateActiveTab],
   );
 
-  const prompt = `user@aspect-os ${cwd} % `;
+  const prompt = `user@aspect-os ${activeTab?.cwd ?? '~'} % `;
 
   return (
     <div
@@ -202,8 +264,28 @@ export function TerminalApp() {
       style={{ background: '#1e1e2e', color: '#cdd6f4' }}
       onClick={() => inputRef.current?.focus()}
     >
+      <div className="h-8 border-b border-white/10 flex items-center px-2 gap-1 overflow-x-auto">
+        {tabs.map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTabId(tab.id)}
+            className={`px-2 py-1 text-[11px] rounded-md ${
+              tab.id === activeTabId ? 'bg-white/15 text-white' : 'text-white/70 hover:bg-white/10'
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
+        <button
+          onClick={createTab}
+          className="ml-1 px-2 py-1 text-[11px] rounded-md text-white/80 hover:bg-white/10"
+          title="New tab"
+        >
+          +
+        </button>
+      </div>
       <div ref={scrollRef} className="flex-1 overflow-y-auto p-3 pb-0">
-        {history.map((line, i) => (
+        {activeTab?.history.map((line, i) => (
           <pre
             key={i}
             className="whitespace-pre-wrap break-words leading-relaxed"
@@ -227,10 +309,10 @@ export function TerminalApp() {
           <span style={{ color: '#a6e3a1' }}>{prompt}</span>
           <input
             ref={inputRef}
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
+            value={activeTab?.input ?? ''}
+            onChange={(e) => updateActiveTab((tab) => ({ ...tab, input: e.target.value }))}
             onKeyDown={handleKeyDown}
-            className="flex-1 bg-transparent outline-none caret-[#a6e3a1]"
+            className="flex-1 ml-1 bg-transparent outline-none caret-[#a6e3a1]"
             style={{ color: '#cdd6f4', caretColor: '#a6e3a1' }}
             autoFocus
             spellCheck={false}

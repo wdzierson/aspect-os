@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Bold, Italic, Type } from 'lucide-react';
+import type { AppContext } from '@aspect/os-core';
+import { saveDesktopTextFile } from '../desktopFiles';
 
 const DEFAULT_CONTENT = `Welcome to AspectOS Notes!
 
@@ -13,12 +15,17 @@ Features:
 
 Try typing here to see the word count and character count update in real time. The save indicator will appear once you stop typing for a moment.`;
 
-export function NotepadApp() {
-  const [content, setContent] = useState(DEFAULT_CONTENT);
+export function NotepadApp({ context }: { context?: AppContext }) {
+  const initialContent =
+    typeof context?.metadata?.initialContent === 'string' ? context.metadata.initialContent : DEFAULT_CONTENT;
+  const [content, setContent] = useState(initialContent);
   const [isBold, setIsBold] = useState(false);
   const [isItalic, setIsItalic] = useState(false);
   const [fontSize, setFontSize] = useState('14');
   const [saveStatus, setSaveStatus] = useState<'saved' | 'typing' | 'idle'>('idle');
+  const [fileName, setFileName] = useState<string>(
+    typeof context?.metadata?.fileName === 'string' ? context.metadata.fileName : 'Untitled.txt',
+  );
   const saveTimer = useRef<ReturnType<typeof setTimeout>>();
 
   const wordCount = content.trim() ? content.trim().split(/\s+/).length : 0;
@@ -37,6 +44,30 @@ export function NotepadApp() {
       if (saveTimer.current) clearTimeout(saveTimer.current);
     };
   }, []);
+
+  const saveToDesktop = useCallback(() => {
+    const suggested = fileName.replace(/\.txt$/i, '') || 'Untitled';
+    const prompted = window.prompt('Save text file as:', suggested);
+    if (!prompted) return;
+    const saved = saveDesktopTextFile(prompted, content);
+    setFileName(saved.name);
+    setSaveStatus('saved');
+  }, [content, fileName]);
+
+  useEffect(() => {
+    const handleMenuAction = (event: Event) => {
+      const detail = (event as CustomEvent<{ action?: string; appId?: string; windowId?: string }>).detail;
+      if (
+        detail?.appId === 'notepad' &&
+        detail.action === 'notes-save' &&
+        detail.windowId === context?.windowId
+      ) {
+        saveToDesktop();
+      }
+    };
+    window.addEventListener('os:menu-action', handleMenuAction);
+    return () => window.removeEventListener('os:menu-action', handleMenuAction);
+  }, [saveToDesktop]);
 
   return (
     <div className="flex flex-col h-full">
@@ -78,6 +109,14 @@ export function NotepadApp() {
           )}
         </select>
 
+        <button
+          onClick={saveToDesktop}
+          className="ml-1 px-2 py-1 text-xs rounded-md border border-border bg-muted text-foreground hover:bg-muted/80 transition-colors"
+          title="Save to Desktop"
+        >
+          Save
+        </button>
+
         <div className="flex-1" />
 
         <span
@@ -115,7 +154,7 @@ export function NotepadApp() {
           {wordCount} {wordCount === 1 ? 'word' : 'words'} · {charCount}{' '}
           {charCount === 1 ? 'character' : 'characters'}
         </span>
-        <span>UTF-8 · Plain Text</span>
+        <span>{fileName} · UTF-8 · Plain Text</span>
       </div>
     </div>
   );

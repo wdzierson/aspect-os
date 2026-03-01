@@ -3,7 +3,7 @@ import type { AppManifest } from '@aspect/os-core';
 import { cn } from '../../lib/utils';
 import { useOSServices } from '../../store/OSServicesContext';
 import { DesktopSurface } from './DesktopSurface';
-import { DesktopIconGrid } from './DesktopIconGrid';
+import { DesktopIconGrid, type DesktopFileItem } from './DesktopIconGrid';
 import { TrashIcon, type TrashDropItem } from './TrashIcon';
 
 export interface DesktopApp extends AppManifest {
@@ -13,20 +13,24 @@ export interface DesktopApp extends AppManifest {
 export interface OSDesktopProps {
   wallpaper?: string;
   apps: DesktopApp[];
+  files?: DesktopFileItem[];
   children?: ReactNode;
   showTrash?: boolean;
   className?: string;
   onAppLaunch?: (appId: string) => void;
+  onOpenFile?: (filename: string) => void;
   onDesktopClick?: () => void;
 }
 
 export function OSDesktop({
   wallpaper,
   apps,
+  files = [],
   children,
   showTrash = true,
   className,
   onAppLaunch,
+  onOpenFile,
   onDesktopClick,
 }: OSDesktopProps) {
   const { appRegistry } = useOSServices();
@@ -90,7 +94,12 @@ export function OSDesktop({
       className={cn(className)}
     >
       <div className="absolute inset-0 top-8">
-        <DesktopIconGrid apps={manifests} onLaunchApp={handleLaunch} />
+        <DesktopIconGrid
+          apps={manifests}
+          files={files}
+          onLaunchApp={handleLaunch}
+          onOpenFile={onOpenFile}
+        />
 
         {showTrash && (
           <TrashIcon onDrop={handleTrashDrop} />

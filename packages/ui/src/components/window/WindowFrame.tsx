@@ -47,8 +47,14 @@ export function WindowFrame({
 }: WindowFrameProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [isResizing, setIsResizing] = useState(false);
+  const [showOpenAnimation, setShowOpenAnimation] = useState(true);
   const dragOffset = useRef({ x: 0, y: 0 });
   const windowRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => setShowOpenAnimation(false), 220);
+    return () => window.clearTimeout(timer);
+  }, []);
 
   const handleMouseDown = useCallback(
     (e: React.MouseEvent) => {
@@ -147,7 +153,7 @@ export function WindowFrame({
       className={cn(
         'absolute os-glass-window rounded-xl overflow-hidden',
         'focus:outline-none',
-        !interacting && 'animate-os-scale-in',
+        showOpenAnimation && !interacting && 'animate-os-scale-in',
         !interacting && 'transition-shadow duration-normal ease-out',
         isActive ? 'shadow-window' : 'shadow-md',
         className,

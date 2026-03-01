@@ -2,6 +2,11 @@
 
 A reusable, macOS-style windowed OS experience as a React component library.
 
+## Documentation
+
+- Human developer guide: `docs/GUIDE.md`
+- AI/agentic quickstart: `docs/AGENTS.md`
+
 ## Quick Start
 
 ```tsx
@@ -36,7 +41,7 @@ function App() {
 ## Packages
 
 | Package | Description | Size |
-|---------|-------------|------|
+| --- | --- | --- |
 | `@aspect/os-core` | Headless OS primitives: window manager, app registry, event bus, focus manager | 17 KB |
 | `@aspect/os-ui` | React components: windows, desktop, menu bar, dialogs, notifications | 62 KB |
 | `@aspect/os-theme` | Design tokens, CSS variables, Tailwind preset, glassmorphism | 6 KB |
@@ -44,7 +49,7 @@ function App() {
 
 ## Architecture
 
-```
+```text
 @aspect/os-core (headless)
 ├── WindowManager — window state, position, z-index, resize, minimize/maximize
 ├── AppRegistry — app manifests, launch/close lifecycle, running app tracking
@@ -114,6 +119,7 @@ All tokens use the `--os-` CSS variable prefix. Key categories:
 ## Accessibility
 
 WCAG 2.1 AA compliant:
+
 - All interactive elements have `aria-label` attributes
 - Keyboard navigation: Tab through windows, Escape to close, Cmd+W to close active window
 - Focus management with `aria-live` regions for screen reader announcements
