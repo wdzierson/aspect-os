@@ -37,41 +37,42 @@ export function DesktopIconGrid({
 
   return (
     <div
-      className={cn(
-        'absolute right-2 top-2 flex flex-col-reverse flex-wrap-reverse content-end gap-1',
-        'pointer-events-none h-[calc(100%-4rem)]',
-        className,
-      )}
+      className={cn('absolute inset-0 pointer-events-none', className)}
       role="grid"
       aria-label="Desktop icons"
     >
-      {visibleApps.map((app) => (
-        <div key={app.id} className="pointer-events-auto" role="gridcell">
-          <DesktopIcon
-            id={app.id}
-            name={app.name}
-            icon={app.icon ?? '📦'}
-            isSelected={selectedItems.includes(app.id)}
-            onDoubleClick={() => onLaunchApp(app.id)}
-            onClick={() => onSelectItem?.(app.id)}
-            onDragStart={(e) => onDragStart?.(app.id, 'app', e)}
-          />
-        </div>
-      ))}
+      <div
+        className="absolute top-2 right-4 flex flex-col flex-wrap-reverse items-end gap-1 pointer-events-auto"
+        style={{ maxHeight: 'calc(100% - 4rem)', width: '80px' }}
+      >
+        {visibleApps.map((app) => (
+          <div key={app.id} role="gridcell">
+            <DesktopIcon
+              id={app.id}
+              name={app.name}
+              icon={app.icon ?? '📦'}
+              isSelected={selectedItems.includes(app.id)}
+              onDoubleClick={() => onLaunchApp(app.id)}
+              onClick={() => onSelectItem?.(app.id)}
+              onDragStart={(e) => onDragStart?.(app.id, 'app', e)}
+            />
+          </div>
+        ))}
 
-      {files.map((file) => (
-        <div key={file.name} className="pointer-events-auto" role="gridcell">
-          <DesktopIcon
-            id={file.name}
-            name={file.name}
-            icon={file.icon ?? '📄'}
-            isSelected={selectedItems.includes(file.name)}
-            onDoubleClick={() => onOpenFile?.(file.name)}
-            onClick={() => onSelectItem?.(file.name)}
-            onDragStart={(e) => onDragStart?.(file.name, 'file', e)}
-          />
-        </div>
-      ))}
+        {files.map((file) => (
+          <div key={file.name} role="gridcell">
+            <DesktopIcon
+              id={file.name}
+              name={file.name}
+              icon={file.icon ?? '📄'}
+              isSelected={selectedItems.includes(file.name)}
+              onDoubleClick={() => onOpenFile?.(file.name)}
+              onClick={() => onSelectItem?.(file.name)}
+              onDragStart={(e) => onDragStart?.(file.name, 'file', e)}
+            />
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

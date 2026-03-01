@@ -88,14 +88,8 @@ export function OSDesktop({
       onDesktopClick={onDesktopClick}
       className={cn(className)}
     >
-      <div className="relative h-full pt-8">
+      <div className="absolute inset-0 top-8">
         <DesktopIconGrid apps={manifests} onLaunchApp={handleLaunch} />
-
-        {/*
-          WindowRenderer is expected to be provided by the consumer or a
-          higher-level shell component. The componentMap is available for
-          it via the apps prop passed to this component.
-        */}
 
         {showTrash && (
           <TrashIcon onDrop={handleTrashDrop} />
