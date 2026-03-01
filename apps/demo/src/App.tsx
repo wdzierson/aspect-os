@@ -1,74 +1,77 @@
 import './index.css';
-import { useMemo, useCallback } from 'react';
-import { windowManager } from '@aspect/os-core';
+import { useMemo } from 'react';
 import {
   OSProvider,
   OSDesktop,
   SystemMenuBar,
   SystemTray,
   WindowRenderer,
+  useOSServices,
 } from '@aspect/os-ui';
-import { TextEditor } from './apps/TextEditor';
-import { Calculator } from './apps/Calculator';
-import { Settings } from './apps/Settings';
+import { MessageCircle, FileText, Settings } from 'lucide-react';
+import { ChatApp } from './apps/ChatApp';
+import { NotepadApp } from './apps/NotepadApp';
+import { PreferencesApp } from './apps/PreferencesApp';
 
-const WALLPAPER = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+const WALLPAPER =
+  'linear-gradient(135deg, #1a1a2e 0%, #16213e 25%, #0f3460 50%, #533483 75%, #e94560 100%)';
 
-const apps = [
+function AppIcon({ icon: Icon }: { icon: React.ComponentType<any> }) {
+  return <Icon className="w-9 h-9 text-white drop-shadow-lg" strokeWidth={1.5} />;
+}
+
+const appDefinitions = [
   {
-    id: 'textedit',
-    name: 'TextEdit',
-    icon: '📝',
-    defaultTitle: 'TextEdit',
-    defaultWidth: 600,
-    defaultHeight: 400,
-    component: TextEditor,
-  },
-  {
-    id: 'calculator',
-    name: 'Calculator',
-    icon: '🧮',
-    defaultTitle: 'Calculator',
-    defaultWidth: 320,
-    defaultHeight: 480,
-    preferredPosition: 'center' as const,
-    component: Calculator,
-  },
-  {
-    id: 'settings',
-    name: 'System Preferences',
-    icon: '⚙️',
-    defaultTitle: 'System Preferences',
-    defaultWidth: 700,
+    id: 'chat',
+    name: 'Messages',
+    icon: <AppIcon icon={MessageCircle} />,
+    defaultTitle: 'Messages',
+    defaultWidth: 680,
     defaultHeight: 500,
-    component: Settings,
+    component: ChatApp,
+  },
+  {
+    id: 'notepad',
+    name: 'Notes',
+    icon: <AppIcon icon={FileText} />,
+    defaultTitle: 'Untitled — Notes',
+    defaultWidth: 600,
+    defaultHeight: 450,
+    component: NotepadApp,
+  },
+  {
+    id: 'preferences',
+    name: 'System Preferences',
+    icon: <AppIcon icon={Settings} />,
+    defaultTitle: 'System Preferences',
+    defaultWidth: 720,
+    defaultHeight: 520,
+    preferredPosition: 'center' as const,
+    component: PreferencesApp,
   },
 ];
 
 function Desktop() {
+  const { windowManager } = useOSServices();
+
   const componentMap = useMemo(() => {
     const map = new Map<string, React.ComponentType<any>>();
-    for (const app of apps) map.set(app.id, app.component);
+    for (const app of appDefinitions) map.set(app.id, app.component);
     return map;
   }, []);
 
-  const onFocus = useCallback((id: string) => windowManager.focusWindow(id), []);
-  const onClose = useCallback((id: string) => windowManager.closeWindow(id), []);
-  const onMove = useCallback((id: string, x: number, y: number) => windowManager.updateWindow(id, { x, y }), []);
-  const onResize = useCallback((id: string, w: number, h: number) => windowManager.updateWindow(id, { width: w, height: h }), []);
-  const onMinimize = useCallback((id: string) => windowManager.minimizeWindow(id), []);
-  const onMaximize = useCallback((id: string) => windowManager.maximizeWindow(id), []);
-
   return (
-    <OSDesktop wallpaper={WALLPAPER} apps={apps}>
+    <OSDesktop wallpaper={WALLPAPER} apps={appDefinitions}>
       <WindowRenderer
         appComponentMap={componentMap}
-        onWindowFocus={onFocus}
-        onWindowClose={onClose}
-        onWindowMove={onMove}
-        onWindowResize={onResize}
-        onWindowMinimize={onMinimize}
-        onWindowMaximize={onMaximize}
+        onWindowFocus={(id) => windowManager.focusWindow(id)}
+        onWindowClose={(id) => windowManager.closeWindow(id)}
+        onWindowMove={(id, x, y) => windowManager.updateWindow(id, { x, y })}
+        onWindowResize={(id, w, h) =>
+          windowManager.updateWindow(id, { width: w, height: h })
+        }
+        onWindowMinimize={(id) => windowManager.minimizeWindow(id)}
+        onWindowMaximize={(id) => windowManager.maximizeWindow(id)}
       />
     </OSDesktop>
   );

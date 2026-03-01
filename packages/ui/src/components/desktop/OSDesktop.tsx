@@ -1,7 +1,7 @@
 import { type ReactNode, useEffect, useMemo, useCallback, useRef } from 'react';
 import type { AppManifest } from '@aspect/os-core';
-import { appRegistry } from '@aspect/os-core';
 import { cn } from '../../lib/utils';
+import { useOSServices } from '../../store/OSServicesContext';
 import { DesktopSurface } from './DesktopSurface';
 import { DesktopIconGrid } from './DesktopIconGrid';
 import { TrashIcon, type TrashDropItem } from './TrashIcon';
@@ -29,6 +29,7 @@ export function OSDesktop({
   onAppLaunch,
   onDesktopClick,
 }: OSDesktopProps) {
+  const { appRegistry } = useOSServices();
   const registeredRef = useRef(new Set<string>());
 
   useEffect(() => {
@@ -52,7 +53,7 @@ export function OSDesktop({
         // Already registered — safe to ignore on HMR re-mounts
       }
     }
-  }, [apps]);
+  }, [apps, appRegistry]);
 
   const componentMap = useMemo(() => {
     const map = new Map<string, React.ComponentType<any>>();
@@ -67,7 +68,7 @@ export function OSDesktop({
       appRegistry.launchApp(appId);
       onAppLaunch?.(appId);
     },
-    [onAppLaunch],
+    [appRegistry, onAppLaunch],
   );
 
   const handleTrashDrop = useCallback((item: TrashDropItem) => {

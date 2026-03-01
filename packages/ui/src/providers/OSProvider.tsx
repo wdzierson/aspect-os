@@ -6,25 +6,18 @@ import {
   createEventBus,
   createFocusManager,
   createScreenBounds,
+  OS_EVENTS,
   type OSConfig,
 } from '@aspect/os-core';
 import { OSStoreProvider } from '../store/OSStoreContext';
+import { OSServicesProvider, type OSServices } from '../store/OSServicesContext';
 
 export interface OSProviderProps {
   children: ReactNode;
   config?: OSConfig;
 }
 
-interface OSServices {
-  store: ReturnType<typeof createOSStore>;
-  eventBus: ReturnType<typeof createEventBus>;
-  screenBounds: ReturnType<typeof createScreenBounds>;
-  windowManager: ReturnType<typeof createWindowManager>;
-  appRegistry: ReturnType<typeof createAppRegistry>;
-  focusManager: ReturnType<typeof createFocusManager>;
-}
-
-function initServices(config?: OSConfig): OSServices {
+function initServices(config?: OSConfig) {
   const store = createOSStore();
   const eventBus = createEventBus();
   const screenBounds = createScreenBounds(config);
@@ -36,17 +29,20 @@ function initServices(config?: OSConfig): OSServices {
     store.getState().setWindows(windows);
   });
 
-  return { store, eventBus, screenBounds, windowManager, appRegistry, focusManager };
+  eventBus.on(OS_EVENTS.APP_REGISTERED, () => {
+    store.getState().setApps(appRegistry.getAllApps());
+  });
+
+  return { store, services: { windowManager, appRegistry, eventBus, focusManager, screenBounds } satisfies OSServices };
 }
 
 export function OSProvider({ children, config }: OSProviderProps) {
-  const servicesRef = useRef<OSServices | null>(null);
-
-  if (!servicesRef.current) {
-    servicesRef.current = initServices(config);
+  const ref = useRef<ReturnType<typeof initServices> | null>(null);
+  if (!ref.current) {
+    ref.current = initServices(config);
   }
 
-  const { store } = servicesRef.current;
+  const { store, services } = ref.current;
 
   useEffect(() => {
     store.getState().setInitialized(true);
@@ -57,7 +53,9 @@ export function OSProvider({ children, config }: OSProviderProps) {
 
   return (
     <OSStoreProvider store={store}>
-      {children}
+      <OSServicesProvider value={services}>
+        {children}
+      </OSServicesProvider>
     </OSStoreProvider>
   );
 }

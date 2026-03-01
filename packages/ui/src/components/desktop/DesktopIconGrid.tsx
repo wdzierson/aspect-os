@@ -50,7 +50,7 @@ export function DesktopIconGrid({
             <DesktopIcon
               id={app.id}
               name={app.name}
-              icon={app.icon ?? '📦'}
+              icon={(app.icon ?? '📦') as string | React.ReactNode}
               isSelected={selectedItems.includes(app.id)}
               onDoubleClick={() => onLaunchApp(app.id)}
               onClick={() => onSelectItem?.(app.id)}

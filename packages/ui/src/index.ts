@@ -89,6 +89,10 @@ export type {
 export { OSStoreProvider, useOSStore } from './store/OSStoreContext';
 export type { OSStoreProviderProps } from './store/OSStoreContext';
 
+// Services context
+export { OSServicesProvider, useOSServices } from './store/OSServicesContext';
+export type { OSServices } from './store/OSServicesContext';
+
 // Provider
 export { OSProvider } from './providers/OSProvider';
 export type { OSProviderProps } from './providers/OSProvider';

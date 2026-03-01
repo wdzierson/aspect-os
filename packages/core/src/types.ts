@@ -30,7 +30,7 @@ export interface WindowConfig {
 export interface AppManifest {
   id: string;
   name: string;
-  icon?: string;
+  icon?: string | unknown;
   defaultTitle: string;
   defaultWidth: number;
   defaultHeight: number;
