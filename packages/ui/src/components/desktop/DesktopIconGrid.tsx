@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { type ReactNode, useMemo } from 'react';
 import type { AppManifest } from '@aspect/os-core';
 import { cn } from '../../lib/utils';
 import { DesktopIcon } from './DesktopIcon';
@@ -6,7 +6,7 @@ import { DesktopIcon } from './DesktopIcon';
 export interface DesktopFileItem {
   name: string;
   type: string;
-  icon?: string;
+  icon?: string | ReactNode;
 }
 
 export interface DesktopIconGridProps {
