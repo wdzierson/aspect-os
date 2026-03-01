@@ -1,5 +1,5 @@
 import './index.css';
-import { useMemo } from 'react';
+import { useMemo, useEffect } from 'react';
 import {
   OSProvider,
   OSDesktop,
@@ -15,6 +15,19 @@ import { PreferencesApp } from './apps/PreferencesApp';
 
 const WALLPAPER =
   'linear-gradient(135deg, #1a1a2e 0%, #16213e 25%, #0f3460 50%, #533483 75%, #e94560 100%)';
+
+function useDarkModeInit() {
+  useEffect(() => {
+    const envDark = import.meta.env.VITE_DARK_MODE;
+    if (envDark === 'true') {
+      document.documentElement.classList.add('dark');
+    } else if (envDark === 'false') {
+      document.documentElement.classList.remove('dark');
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      document.documentElement.classList.add('dark');
+    }
+  }, []);
+}
 
 function AppIcon({ icon: Icon }: { icon: React.ComponentType<any> }) {
   return <Icon className="w-9 h-9 text-white drop-shadow-lg" strokeWidth={1.5} />;
@@ -78,6 +91,8 @@ function Desktop() {
 }
 
 export default function App() {
+  useDarkModeInit();
+
   return (
     <OSProvider>
       <SystemMenuBar activeAppName="Finder" rightContent={<SystemTray />} />

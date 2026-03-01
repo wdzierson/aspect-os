@@ -1,4 +1,4 @@
-import { useState, useCallback, type ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { Settings, Palette, Monitor, Bell, Volume2 } from 'lucide-react';
 
 type Category = 'general' | 'appearance' | 'desktop' | 'notifications' | 'sound';
@@ -31,7 +31,7 @@ function Toggle({ checked, onChange }: { checked: boolean; onChange: (v: boolean
 function SettingRow({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div className="flex items-center justify-between py-2.5">
-      <span className="text-sm text-white/80">{label}</span>
+      <span className="text-sm text-foreground/80">{label}</span>
       {children}
     </div>
   );
@@ -39,7 +39,7 @@ function SettingRow({ label, children }: { label: string; children: ReactNode })
 
 function SectionTitle({ children }: { children: ReactNode }) {
   return (
-    <h3 className="text-[11px] font-semibold uppercase tracking-wider text-white/40 mb-2 mt-4 first:mt-0">
+    <h3 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-2 mt-4 first:mt-0">
       {children}
     </h3>
   );
@@ -58,10 +58,10 @@ function Select({
     <select
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className="bg-white/10 border border-white/15 text-white text-xs rounded-md px-2 py-1 outline-none cursor-pointer"
+      className="bg-muted border border-border text-foreground text-xs rounded-md px-2 py-1 outline-none cursor-pointer"
     >
       {options.map((o) => (
-        <option key={o} value={o} className="bg-gray-800 text-white">
+        <option key={o} value={o}>
           {o}
         </option>
       ))}
@@ -93,8 +93,8 @@ function GeneralPane() {
     <div>
       <SectionTitle>About</SectionTitle>
       <div className="py-2">
-        <div className="text-sm text-white font-medium">AspectOS</div>
-        <div className="text-xs text-white/40">Version 1.0.0 (Demo)</div>
+        <div className="text-sm text-foreground font-medium">AspectOS</div>
+        <div className="text-xs text-muted-foreground">Version 1.0.0 (Demo)</div>
       </div>
 
       <SectionTitle>Startup</SectionTitle>
@@ -111,15 +111,24 @@ function GeneralPane() {
 }
 
 function AppearancePane() {
-  const [darkMode, setDarkMode] = useState(true);
+  const [darkMode, setDarkMode] = useState(() => document.documentElement.classList.contains('dark'));
   const [accent, setAccent] = useState('#3b82f6');
   const [size, setSize] = useState<'small' | 'medium' | 'large'>('medium');
+
+  const toggleDarkMode = (enabled: boolean) => {
+    setDarkMode(enabled);
+    if (enabled) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  };
 
   return (
     <div>
       <SectionTitle>Theme</SectionTitle>
       <SettingRow label="Dark Mode">
-        <Toggle checked={darkMode} onChange={setDarkMode} />
+        <Toggle checked={darkMode} onChange={toggleDarkMode} />
       </SettingRow>
 
       <SectionTitle>Accent Color</SectionTitle>
@@ -130,7 +139,7 @@ function AppearancePane() {
             onClick={() => setAccent(c.color)}
             title={c.name}
             className={`w-7 h-7 rounded-full transition-transform hover:scale-110 ${
-              accent === c.color ? 'ring-2 ring-white ring-offset-2 ring-offset-transparent scale-110' : ''
+              accent === c.color ? 'ring-2 ring-primary ring-offset-2 ring-offset-background scale-110' : ''
             }`}
             style={{ background: c.color }}
           />
@@ -145,8 +154,8 @@ function AppearancePane() {
             onClick={() => setSize(s)}
             className={`px-3 py-1 text-xs rounded-md capitalize transition-colors ${
               size === s
-                ? 'bg-white/20 text-white font-medium'
-                : 'text-white/50 hover:text-white/70 hover:bg-white/5'
+                ? 'bg-primary/15 text-primary font-medium'
+                : 'text-muted-foreground hover:text-foreground hover:bg-muted'
             }`}
           >
             {s}
@@ -171,13 +180,13 @@ function DesktopPane() {
             onClick={() => setSelectedWallpaper(i)}
             className={`h-20 rounded-lg overflow-hidden transition-all ${
               selectedWallpaper === i
-                ? 'ring-2 ring-blue-400 scale-[1.02]'
-                : 'ring-1 ring-white/10 hover:ring-white/25'
+                ? 'ring-2 ring-primary scale-[1.02]'
+                : 'ring-1 ring-border hover:ring-primary/50'
             }`}
             style={{ background: wp.gradient }}
           >
             <div className="w-full h-full flex items-end p-2">
-              <span className="text-[10px] text-white/80 font-medium drop-shadow-md">
+              <span className="text-[10px] text-white font-medium drop-shadow-md">
                 {wp.name}
               </span>
             </div>
@@ -226,8 +235,8 @@ function SoundPane() {
       <SectionTitle>Output</SectionTitle>
       <div className="py-2.5">
         <div className="flex items-center justify-between mb-1.5">
-          <span className="text-sm text-white/80">Volume</span>
-          <span className="text-xs text-white/40">{volume}%</span>
+          <span className="text-sm text-foreground/80">Volume</span>
+          <span className="text-xs text-muted-foreground">{volume}%</span>
         </div>
         <input
           type="range"
@@ -235,9 +244,9 @@ function SoundPane() {
           max={100}
           value={volume}
           onChange={(e) => setVolume(Number(e.target.value))}
-          className="w-full accent-blue-500 h-1 bg-white/15 rounded-full appearance-none cursor-pointer
+          className="w-full accent-blue-500 h-1 bg-muted rounded-full appearance-none cursor-pointer
             [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3.5 [&::-webkit-slider-thumb]:h-3.5
-            [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:shadow-md"
+            [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-foreground [&::-webkit-slider-thumb]:shadow-md"
         />
       </div>
 
@@ -271,15 +280,15 @@ export function PreferencesApp() {
   return (
     <div className="flex h-full">
       {/* Sidebar */}
-      <div className="w-52 flex-shrink-0 border-r border-black/10 bg-black/5 backdrop-blur-sm py-2 px-2">
+      <div className="w-52 flex-shrink-0 border-r border-border/50 bg-muted/30 py-2 px-2">
         {categories.map(({ id, label, icon: Icon }) => (
           <button
             key={id}
             onClick={() => setActive(id)}
             className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm cursor-pointer transition-colors ${
               active === id
-                ? 'bg-white/20 text-white font-medium'
-                : 'text-white/60 hover:bg-white/8 hover:text-white/80'
+                ? 'bg-primary/10 text-primary font-medium'
+                : 'text-muted-foreground hover:bg-muted hover:text-foreground'
             }`}
           >
             <Icon className="w-4 h-4" strokeWidth={1.5} />

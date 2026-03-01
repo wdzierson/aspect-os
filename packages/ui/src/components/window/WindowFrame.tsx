@@ -170,7 +170,7 @@ export function WindowFrame({
         }
       />
 
-      <div className="overflow-auto bg-background" style={{ height: height - 32 }}>
+      <div className="overflow-auto bg-background text-foreground" style={{ height: height - 32 }}>
         {children}
       </div>
 

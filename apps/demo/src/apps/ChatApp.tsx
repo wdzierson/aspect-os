@@ -19,7 +19,7 @@ interface Contact {
 const CANNED_REPLIES = [
   "That's interesting!",
   'Tell me more!',
-  'I was just thinking the same thing 😄',
+  'I was just thinking the same thing',
   'Nice!',
   "Ha, that's great!",
   'Totally agree.',
@@ -60,7 +60,7 @@ const initialContacts: Contact[] = [
     color: '#ec4899',
     status: 'away',
     messages: [
-      { id: 1, text: 'Just pushed the latest build 🚀', sent: false, time: 'Yesterday' },
+      { id: 1, text: 'Just pushed the latest build', sent: false, time: 'Yesterday' },
     ],
   },
   {
@@ -135,9 +135,9 @@ export function ChatApp() {
   return (
     <div className="flex h-full">
       {/* Sidebar */}
-      <div className="w-60 flex-shrink-0 bg-black/10 backdrop-blur-sm border-r border-white/10 flex flex-col">
-        <div className="px-3 py-2.5 border-b border-white/10">
-          <h2 className="text-xs font-semibold text-white/60 uppercase tracking-wider">
+      <div className="w-60 flex-shrink-0 bg-muted/50 border-r border-border/50 flex flex-col">
+        <div className="px-3 py-2.5 border-b border-border/50">
+          <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
             Messages
           </h2>
         </div>
@@ -148,8 +148,8 @@ export function ChatApp() {
               onClick={() => setActiveContactId(contact.id)}
               className={`w-full text-left px-3 py-2.5 flex items-center gap-2.5 transition-colors ${
                 contact.id === activeContactId
-                  ? 'bg-white/15'
-                  : 'hover:bg-white/5'
+                  ? 'bg-primary/10'
+                  : 'hover:bg-muted/80'
               }`}
             >
               <div
@@ -159,10 +159,10 @@ export function ChatApp() {
                 {contact.name.split(' ').map((n) => n[0]).join('')}
               </div>
               <div className="flex-1 min-w-0">
-                <div className="text-sm text-white font-medium truncate">
+                <div className="text-sm text-foreground font-medium truncate">
                   {contact.name}
                 </div>
-                <div className="text-xs text-white/40 truncate">
+                <div className="text-xs text-muted-foreground truncate">
                   {lastMessage(contact)}
                 </div>
               </div>
@@ -174,7 +174,7 @@ export function ChatApp() {
       {/* Chat area */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Header */}
-        <div className="px-4 py-2.5 border-b border-white/10 flex items-center gap-2.5 bg-white/5 backdrop-blur-sm">
+        <div className="px-4 py-2.5 border-b border-border/50 flex items-center gap-2.5 bg-muted/30">
           <div
             className="w-7 h-7 rounded-full flex items-center justify-center text-white text-[10px] font-semibold"
             style={{ background: activeContact.color }}
@@ -182,8 +182,8 @@ export function ChatApp() {
             {activeContact.name.split(' ').map((n) => n[0]).join('')}
           </div>
           <div>
-            <div className="text-sm text-white font-medium">{activeContact.name}</div>
-            <div className="text-[10px] text-white/40">{activeContact.status}</div>
+            <div className="text-sm text-foreground font-medium">{activeContact.name}</div>
+            <div className="text-[10px] text-muted-foreground">{activeContact.status}</div>
           </div>
         </div>
 
@@ -198,13 +198,13 @@ export function ChatApp() {
                 className={`max-w-[70%] px-3 py-1.5 rounded-2xl text-sm leading-relaxed ${
                   msg.sent
                     ? 'bg-blue-500 text-white rounded-br-md'
-                    : 'bg-white/20 text-white rounded-bl-md'
+                    : 'bg-muted text-foreground rounded-bl-md'
                 }`}
               >
                 {msg.text}
                 <div
                   className={`text-[9px] mt-0.5 ${
-                    msg.sent ? 'text-blue-100/60' : 'text-white/30'
+                    msg.sent ? 'text-blue-100/60' : 'text-muted-foreground'
                   }`}
                 >
                   {msg.time}
@@ -216,19 +216,19 @@ export function ChatApp() {
         </div>
 
         {/* Input */}
-        <div className="px-3 py-2.5 border-t border-white/10 flex items-center gap-2">
+        <div className="px-3 py-2.5 border-t border-border/50 flex items-center gap-2">
           <input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Type a message…"
-            className="flex-1 bg-white/10 border border-white/20 text-white placeholder-white/40 rounded-full px-4 py-1.5 text-sm outline-none focus:border-white/40 transition-colors"
+            placeholder="Type a message..."
+            className="flex-1 bg-muted border border-border text-foreground placeholder-muted-foreground rounded-full px-4 py-1.5 text-sm outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-colors"
           />
           <button
             onClick={sendMessage}
             disabled={!input.trim()}
-            className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white hover:bg-blue-400 transition-colors disabled:opacity-30 disabled:hover:bg-blue-500"
+            className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white hover:bg-blue-400 transition-colors disabled:opacity-30"
           >
             <Send className="w-3.5 h-3.5" strokeWidth={2} />
           </button>

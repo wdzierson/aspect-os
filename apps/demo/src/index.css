@@ -3,9 +3,7 @@
 @tailwind components;
 @tailwind utilities;
 
-html,
-body,
-#root {
+html, body, #root {
   margin: 0;
   padding: 0;
   width: 100%;
@@ -28,34 +26,34 @@ body,
   border-width: 0;
 }
 
+/* Toggle switch - works in both light and dark mode */
 .toggle-switch {
   position: relative;
   width: 44px;
   height: 24px;
-  background: rgba(255, 255, 255, 0.15);
+  background: hsl(var(--os-muted));
+  border: 1px solid hsl(var(--os-border));
   border-radius: 12px;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: background 0.2s, border-color 0.2s;
   flex-shrink: 0;
 }
-
 .toggle-switch.active {
   background: hsl(var(--os-primary));
+  border-color: hsl(var(--os-primary));
 }
-
 .toggle-switch::after {
   content: '';
   position: absolute;
-  top: 2px;
-  left: 2px;
+  top: 1px;
+  left: 1px;
   width: 20px;
   height: 20px;
   background: white;
   border-radius: 50%;
   transition: transform 0.2s;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
 }
-
 .toggle-switch.active::after {
   transform: translateX(20px);
 }

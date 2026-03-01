@@ -25,7 +25,7 @@ export function TitleBar({
       aria-label={`${title} title bar`}
       className={cn(
         'window-title-bar h-8 flex items-center justify-between px-4',
-        'border-b border-window-border/50 select-none',
+        'border-b border-black/[0.06] select-none',
         'transition-colors duration-normal',
         isActive
           ? 'bg-window-title backdrop-blur-md'
