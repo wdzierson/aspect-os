@@ -45,7 +45,7 @@ export const AppleMenu = ({
       aria-label="Bright menu"
     >
       <Zap size={14} />
-      <span className="text-[12px] font-semibold tracking-tight">BrightOS</span>
+      <span className="text-[12px] font-semibold tracking-tight">AspectOS</span>
     </Menubar.Trigger>
     <Menubar.Portal>
       <Menubar.Content
