@@ -37,13 +37,13 @@ export function DesktopIconGrid({
 
   return (
     <div
-      className={cn('absolute inset-0 pointer-events-none', className)}
+      className={cn('absolute inset-0', className)}
       role="grid"
       aria-label="Desktop icons"
     >
       <div
-        className="absolute top-2 right-4 flex flex-col flex-wrap-reverse items-end gap-1 pointer-events-auto"
-        style={{ maxHeight: 'calc(100% - 4rem)', width: '100px' }}
+        className="absolute top-12 right-4 flex flex-col flex-wrap-reverse items-end gap-1"
+        style={{ maxHeight: 'calc(100% - 6.25rem)', width: '100px' }}
       >
         {visibleApps.map((app) => (
           <div key={app.id} role="gridcell">
@@ -52,8 +52,11 @@ export function DesktopIconGrid({
               name={app.name}
               icon={(app.icon ?? '📦') as string | React.ReactNode}
               isSelected={selectedItems.includes(app.id)}
+              onClick={() => {
+                onSelectItem?.(app.id);
+                onLaunchApp(app.id);
+              }}
               onDoubleClick={() => onLaunchApp(app.id)}
-              onClick={() => onSelectItem?.(app.id)}
               onDragStart={(e) => onDragStart?.(app.id, 'app', e)}
             />
           </div>

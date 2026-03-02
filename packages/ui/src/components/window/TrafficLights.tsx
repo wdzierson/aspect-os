@@ -1,4 +1,3 @@
-import { X, Minus, Maximize2 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
 export interface TrafficLightsProps {
@@ -30,11 +29,6 @@ export function TrafficLights({
         )}
         aria-label="Close window"
       >
-        <X
-          className="absolute inset-0 m-auto w-2 h-2 text-black/60 opacity-0 group-hover/lights:opacity-100 transition-opacity duration-fast"
-          strokeWidth={3}
-          aria-hidden="true"
-        />
         <span className="sr-only">Close (red)</span>
       </button>
       <button
@@ -49,11 +43,6 @@ export function TrafficLights({
         )}
         aria-label="Minimize window"
       >
-        <Minus
-          className="absolute inset-0 m-auto w-2 h-2 text-black/60 opacity-0 group-hover/lights:opacity-100 transition-opacity duration-fast"
-          strokeWidth={3}
-          aria-hidden="true"
-        />
         <span className="sr-only">Minimize (yellow)</span>
       </button>
       <button
@@ -68,11 +57,6 @@ export function TrafficLights({
         )}
         aria-label="Maximize window"
       >
-        <Maximize2
-          className="absolute inset-0 m-auto w-2 h-2 text-black/60 opacity-0 group-hover/lights:opacity-100 transition-opacity duration-fast"
-          strokeWidth={3}
-          aria-hidden="true"
-        />
         <span className="sr-only">Maximize (green)</span>
       </button>
     </div>

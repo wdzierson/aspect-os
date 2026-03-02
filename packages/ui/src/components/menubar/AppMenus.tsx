@@ -40,7 +40,7 @@ export const AppMenus = ({
             <Menubar.Portal>
               <Menubar.Content
                 className={cn(
-                  'min-w-[180px] rounded-lg p-1',
+                  'min-w-[220px] w-max rounded-lg p-1',
                   'bg-popover/95 backdrop-blur-xl border border-border/50',
                   'shadow-lg',
                   'animate-in fade-in-0 zoom-in-95 slide-in-from-top-1',
@@ -59,11 +59,11 @@ export const AppMenus = ({
                     <Menubar.Item
                       key={item.action ?? ii}
                       className={cn(
-                        'flex items-center justify-between px-3 py-1.5 text-[13px] leading-none rounded-md',
+                        'flex min-w-[220px] items-center justify-start px-3 py-1.5 text-[13px] leading-none rounded-md text-left',
                         'outline-none select-none cursor-default',
                         item.destructive
-                          ? 'text-destructive focus:bg-destructive/10'
-                          : 'text-popover-foreground focus:bg-accent focus:text-accent-foreground',
+                          ? 'text-destructive data-[highlighted]:bg-destructive/20'
+                          : 'text-popover-foreground data-[highlighted]:bg-white/16 data-[highlighted]:text-popover-foreground',
                         item.disabled && 'opacity-40 pointer-events-none',
                       )}
                       disabled={item.disabled}
@@ -71,11 +71,6 @@ export const AppMenus = ({
                       aria-label={item.label}
                     >
                       <span>{item.label}</span>
-                      {item.shortcut && (
-                        <span className="ml-auto pl-4 text-[11px] text-muted-foreground">
-                          {item.shortcut}
-                        </span>
-                      )}
                     </Menubar.Item>
                   ),
                 )}

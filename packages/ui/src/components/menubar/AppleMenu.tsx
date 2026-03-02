@@ -1,5 +1,5 @@
 import * as Menubar from '@radix-ui/react-menubar';
-import { Apple } from 'lucide-react';
+import { Zap } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
 export interface MenuItem {
@@ -37,19 +37,20 @@ export const AppleMenu = ({
   <Menubar.Menu>
     <Menubar.Trigger
       className={cn(
-        'flex h-full items-center px-2 rounded-[4px] text-foreground/90',
+        'flex h-full items-center gap-1.5 px-2 rounded-[4px] text-foreground/90',
         'data-[state=open]:bg-white/10 hover:bg-white/10',
         'outline-none select-none cursor-default',
         className,
       )}
-      aria-label="Apple menu"
+      aria-label="Bright menu"
     >
-      <Apple size={14} />
+      <Zap size={14} />
+      <span className="text-[12px] font-semibold tracking-tight">BrightOS</span>
     </Menubar.Trigger>
     <Menubar.Portal>
       <Menubar.Content
         className={cn(
-          'min-w-[200px] rounded-lg p-1',
+          'min-w-[230px] w-max rounded-lg p-1',
           'bg-popover/95 backdrop-blur-xl border border-border/50',
           'shadow-lg',
           'animate-in fade-in-0 zoom-in-95 slide-in-from-top-1',
@@ -68,11 +69,11 @@ export const AppleMenu = ({
             <Menubar.Item
               key={item.action ?? i}
               className={cn(
-                'flex items-center justify-between px-3 py-1.5 text-[13px] leading-none rounded-md',
+                'flex min-w-[230px] items-center justify-start px-3 py-1.5 text-[13px] leading-none rounded-md text-left',
                 'outline-none select-none cursor-default',
                 item.destructive
-                  ? 'text-destructive focus:bg-destructive/10'
-                  : 'text-popover-foreground focus:bg-accent focus:text-accent-foreground',
+                  ? 'text-destructive data-[highlighted]:bg-destructive/20'
+                  : 'text-popover-foreground data-[highlighted]:bg-white/16 data-[highlighted]:text-popover-foreground',
                 item.disabled && 'opacity-40 pointer-events-none',
               )}
               disabled={item.disabled}
@@ -80,11 +81,6 @@ export const AppleMenu = ({
               aria-label={item.label}
             >
               <span>{item.label}</span>
-              {item.shortcut && (
-                <span className="ml-auto pl-4 text-[11px] text-muted-foreground">
-                  {item.shortcut}
-                </span>
-              )}
             </Menubar.Item>
           ),
         )}
