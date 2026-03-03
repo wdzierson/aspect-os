@@ -5,6 +5,7 @@ export interface DesktopIconProps {
   id: string;
   name: string;
   icon: string | ReactNode;
+  itemType?: 'app' | 'file';
   isSelected?: boolean;
   isDraggable?: boolean;
   onDoubleClick: () => void;
@@ -17,6 +18,7 @@ export function DesktopIcon({
   id,
   name,
   icon,
+  itemType = 'app',
   isSelected = false,
   isDraggable = true,
   onDoubleClick,
@@ -28,12 +30,12 @@ export function DesktopIcon({
     (e: React.DragEvent) => {
       e.dataTransfer.setData(
         'application/os-desktop-item',
-        JSON.stringify({ id, type: 'app' }),
+        JSON.stringify({ id, type: itemType, name }),
       );
       e.dataTransfer.effectAllowed = 'move';
       onDragStart?.(e);
     },
-    [id, onDragStart],
+    [id, itemType, name, onDragStart],
   );
 
   const handleKeyDown = useCallback(

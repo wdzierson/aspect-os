@@ -10,6 +10,8 @@ import {
   setUIPreferences,
   getThemeMode,
   setThemeMode,
+  getAccentColor,
+  setAccentColor,
   type InterfaceSize,
   type TextSize,
 } from '../uiPreferences';
@@ -145,7 +147,7 @@ function AppearancePane() {
     if (persisted) return persisted === 'dark';
     return document.documentElement.classList.contains('dark');
   });
-  const [accent, setAccent] = useState('#3b82f6');
+  const [accent, setAccent] = useState(() => getAccentColor());
   const [size, setSize] = useState<InterfaceSize>(() => getUIPreferences().interfaceSize);
   const [textSize, setTextSize] = useState<TextSize>(() => getUIPreferences().textSize);
 
@@ -172,7 +174,7 @@ function AppearancePane() {
         {ACCENT_COLORS.map((c) => (
           <button
             key={c.name}
-            onClick={() => setAccent(c.color)}
+            onClick={() => { setAccent(c.color); setAccentColor(c.color); }}
             title={c.name}
             className={`w-7 h-7 rounded-full transition-transform hover:scale-110 ${
               accent === c.color ? 'ring-2 ring-primary ring-offset-2 ring-offset-background scale-110' : ''

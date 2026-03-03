@@ -18,13 +18,15 @@ import { TerminalApp } from './apps/TerminalApp';
 import { ComponentShowcase } from './apps/ComponentShowcase';
 import { LoginScreen } from './components/LoginScreen';
 import { getDesktopBackground, subscribeDesktopBackground } from './desktopBackground';
-import { getDesktopFiles, subscribeDesktopFiles } from './desktopFiles';
+import { getDesktopFiles, subscribeDesktopFiles, deleteDesktopFile } from './desktopFiles';
 import {
   getUIPreferences,
   subscribeUIPreferences,
   getInterfaceScale,
   getTextScale,
   getThemeMode,
+  getAccentColor,
+  applyAccentColor,
   type UIPreferences,
 } from './uiPreferences';
 
@@ -223,6 +225,10 @@ function Desktop() {
     root.style.setProperty('--aspect-desktop-emoji-size', `${1.875 * uiScale}rem`);
   }, [uiPrefs]);
 
+  useEffect(() => {
+    applyAccentColor(getAccentColor());
+  }, []);
+
   const componentMap = useMemo(() => {
     const map = new Map<string, React.ComponentType<any>>();
     for (const app of appDefinitions) map.set(app.id, app.component);
@@ -291,6 +297,9 @@ function Desktop() {
             initialContent: file.content,
             fileName: file.name,
           });
+        }}
+        onTrashDrop={(item) => {
+          if (item.type === 'file') deleteDesktopFile(item.name);
         }}
       >
       <WindowRenderer

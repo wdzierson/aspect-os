@@ -19,6 +19,7 @@ export interface OSDesktopProps {
   className?: string;
   onAppLaunch?: (appId: string) => void;
   onOpenFile?: (filename: string) => void;
+  onTrashDrop?: (item: TrashDropItem) => void;
   onDesktopClick?: () => void;
 }
 
@@ -31,6 +32,7 @@ export function OSDesktop({
   className,
   onAppLaunch,
   onOpenFile,
+  onTrashDrop,
   onDesktopClick,
 }: OSDesktopProps) {
   const { appRegistry } = useOSServices();
@@ -76,10 +78,8 @@ export function OSDesktop({
   );
 
   const handleTrashDrop = useCallback((item: TrashDropItem) => {
-    // Consumers can hook into the OS event bus for trash events.
-    // Default behavior: log and ignore. Apps should override via onDrop.
-    console.debug('[OSDesktop] Trash drop:', item);
-  }, []);
+    onTrashDrop?.(item);
+  }, [onTrashDrop]);
 
   const manifests = useMemo(
     () =>

@@ -68,6 +68,7 @@ export function DesktopIconGrid({
               id={file.name}
               name={file.name}
               icon={file.icon ?? '📄'}
+              itemType="file"
               isSelected={selectedItems.includes(file.name)}
               onDoubleClick={() => onOpenFile?.(file.name)}
               onClick={() => onSelectItem?.(file.name)}

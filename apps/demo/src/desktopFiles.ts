@@ -39,6 +39,12 @@ export function saveDesktopTextFile(name: string, content: string): DesktopTextF
   return next;
 }
 
+export function deleteDesktopFile(name: string): void {
+  const files = getDesktopFiles();
+  const updated = files.filter((f) => f.name !== name);
+  if (updated.length !== files.length) persist(updated);
+}
+
 export function subscribeDesktopFiles(
   callback: (files: DesktopTextFile[]) => void,
 ): () => void {
