@@ -225,3 +225,20 @@
   padding: var(--os-space-4);
   min-width: 256px;
 }
+
+/* Menubar dropdown panels */
+.os-menu-dropdown {
+  background: hsl(0 0% 100% / 0.82);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+}
+
+.dark .os-menu-dropdown {
+  background: hsl(220 15% 12% / 0.82);
+}
+
+/* Accent-colored highlight for hovered/focused menu items */
+.os-menu-item[data-highlighted] {
+  background: hsl(var(--os-accent)) !important;
+  color: hsl(var(--os-accent-foreground)) !important;
+}

@@ -51,7 +51,7 @@ export const AppleMenu = ({
       <Menubar.Content
         className={cn(
           'min-w-[230px] w-max rounded-lg p-1',
-          'bg-popover/95 backdrop-blur-xl border border-border/50',
+          'os-menu-dropdown border border-border/50',
           'shadow-lg',
           'animate-in fade-in-0 zoom-in-95 slide-in-from-top-1',
           'z-[1001]',
@@ -73,7 +73,7 @@ export const AppleMenu = ({
                 'outline-none select-none cursor-default',
                 item.destructive
                   ? 'text-destructive data-[highlighted]:bg-destructive/20'
-                  : 'text-popover-foreground data-[highlighted]:bg-white/16 data-[highlighted]:text-popover-foreground',
+                  : 'os-menu-item text-popover-foreground',
                 item.disabled && 'opacity-40 pointer-events-none',
               )}
               disabled={item.disabled}
